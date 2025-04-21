@@ -1,0 +1,21 @@
+# Environnement virtuel
+venv_projet_sta211/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Fichiers de données
+*.csv
+*.rda
+
+# Fichiers de sortie
+*.png
+*.pdf
+
+# IDE
+.vscode/
+.idea/
+
+# Système
+.DS_Store
+Thumbs.db 

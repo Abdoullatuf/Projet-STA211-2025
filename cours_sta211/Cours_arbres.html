@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Connexion au service d'authentification du Cnam">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Cnam : authentification</title>
+        <link rel="icon" type="image/png" href="/css/imgs/favicon.ico" />
+
+        <link href="/bower_components/reset-css/reset.css" rel="stylesheet" type="text/css" />
+        <link href="/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="/stylesheets/main.css" rel="stylesheet" type="text/css" />
+        <link href="/stylesheets/blitzer/jquery-ui-1.10.3.custom.css" rel="stylesheet" type="text/css" />
+
+
+        <script type="text/javascript" src="/js/jquery-1.10.1.min.js"></script>
+        <script type="text/javascript">var $j = jQuery.noConflict();</script>
+
+        <script type="text/javascript" src="/bower_components/tether/dist/js/tether.min.js"></script>
+        <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/bower_components/slick-carousel/slick/slick.min.js"></script>
+        <script type="text/javascript" src="/scripts/main.js"></script>
+        <script type="text/javascript" src="/scripts/javascript.js"></script>
+        <script type="text/javascript" src="/scripts/jquery-ui-1.10.3.custom.min.js"></script>
+	<script type="text/javascript">
+	        
+	            $j(document).ready(function() {
+                        $j('#btnShowPassword').on('click', function () {
+                            //this.blur();
+                            if($j('#glyphiconPassword').hasClass('glyphicon-eye-open'))
+                            {
+                                $j('#btnShowPassword').attr('title', 'Masquer le mot de passe');
+                                $j('#glyphiconPassword').removeClass('glyphicon-eye-open');
+                                $j('#glyphiconPassword').addClass('glyphicon-eye-close');
+                                $j('#mdp').attr('type', 'text');
+                            }
+                            else
+                            {
+                                $j('#btnShowPassword').attr('title', 'Afficher le mot de passe');
+                                $j('#glyphiconPassword').removeClass('glyphicon-eye-close');
+                                $j('#glyphiconPassword').addClass('glyphicon-eye-open');
+                                $j('#mdp').attr('type', 'password');
+                            }
+                        });
+			if(document.getElementById("expire")){
+                            $j("#form_auth").hide();
+                            $j("#form_mandatory").hide();
+                            $j("#forget").hide();
+			    $j("#login-card").css('min-height','100px');
+                        }
+                    });
+                
+	</script>
+    </head>
+    <body>
+        <header class="cnam-header logged-in">
+            <div class="main-wrapper">
+                <div class="skip-to-content-wrapper">
+                    <a class="skip-to-content sr-only" href="">Skip to content</a>
+                </div>
+                <div class="row" id="rowHeader">
+                    <div class="col-lg-12 col-md-9 col-sm-8 col-xs-7">
+                        <div class="upper-header">
+                            <div class="cnam-container">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="logo-wrapper primary-logo">
+                                            <a href="https://lecnam.net/">
+                                                <img class="img-alt--white" src="/assets/images/main-logo.png" alt="le cnam">
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="logo-wrapper secondary-logo">
+                                            <div class="image-header">
+						<a href="https://lecnam.net/" title="Accueil du Portail ENF">
+							<img class="img-alt--white" src="/assets/images/logo.png" alt="Espace numerique de formation">
+						</a>
+					    </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-3 col-sm-4 col-xs-5 mobile-static">
+                        <nav class="lower-header mobile-separator">
+                            <div class="cnam-container">
+                                <div class="row">
+                                    <div class="col-lg-8 col-md-4 col-xs-4 push-right-md mobile-static first-menu-symbol">
+                                        <div class="navbar mobile-static" role="menubar">
+
+                                            <button class="navbar-toggler hidden-lg-up" type="button" data-toggle="collapse">
+                                                <img class="img-alt--white" src="/assets/images/hamburger.png" alt="Menu">
+                                            </button>
+                                            <!-- MENU -->
+                                            <div class="menu collapse navbar-toggleable-md" id="collapsibleNavbar">
+                                                <ul class="nav navbar-nav">
+                                                    <li class="menu-item first-item" role="menuitem">
+                                                        <a href="https://lecnam.net" class="dropdown-toggle no-sub">Accueil</a>
+                                                    </li>
+						    <li class="menu-item" role="menuitem">
+						        <a href="https://lecnam.net/documentations" class="dropdown-toggle no-sub">Mes documentations<span class="caret"></span> </a>
+					            </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <nav class="breadcrumbs">
+            <ul class="cnam-container">
+                <li>Authentification à l'Espace Numérique de Formation</li>
+            </ul>
+        </nav>
+
+        <!-- CONTENU -->
+        <main class="connect">
+            <div class="cnam-container">
+                <h1>
+                    <img src="/assets/images/power.png" class="power-symbol" alt="" />AUTHENTIFICATION
+                </h1>
+                <div class="row">
+                    <div class="col-md-6 connect-block reset-password-block">
+                        <div class="card login-card reset-password-card" id="login-card">
+                            <img src="/assets/images/laptop-new.jpg" class="connect-picture desktop-only" alt="" />
+                            <div class="form-container">
+                                <div class="connect-text reset-password-text font-weight-normal font-italic" id="form_mandatory">
+                                    Les champs marqués d'une astérisque (*) sont obligatoires
+                                </div>
+
+
+
+                                <form action="/idp/profile/SAML2/Redirect/SSO?execution=e1s1" method="post" id="form_auth">
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control form-element form-field" id="identifiant" name="j_username" placeholder="Adresse lecnam.net ou nom d'utilisateur*"/>
+                                            <label class="sr-only" for="identifiant">Adresse lecnam.net ou nom d'utilisateur</label>
+                                        </div>
+
+                                        <div class="form-group">
+                                             <div class="input-group">
+                                                <input type="password" class="form-control form-element form-field" id="mdp" name="j_password" placeholder="Mot de passe*" />
+                                                <span class="input-group-addon">
+                                                    <a id="btnShowPassword" class="btn btn-sm" title="Afficher le mot de passe"><span id="glyphiconPassword" class="glyphicon glyphicon-eye-open" aria-hidden="true" style="color:black;"></span></a>
+                                                </span>
+                                            </div>
+					    <label class="sr-only" for="mdp">Mot de passe*</label>
+                                        </div>
+
+                                          <div class="form-group">
+                                            <button class="btn btn-primary-color" type="submit" name="_eventId_proceed"
+                                                onClick="this.childNodes[0].nodeValue='Connexion, veuillez patienter...'"
+                                                >Se connecter</button>
+                                          </div>
+
+
+                                    </fieldset>
+                                </form>
+				<a href="https://lecnam.net/reinitialisation" style="float:left" id="forget">Mot de passe oublié ?</a>
+                                <a href="https://lecnam.net/aide" style="float:right">Besoin d'aide ?</a><br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer cnam-footer">
+            <div class="cnam-container">
+                <div class="image-wrapper">
+                    <div>
+                        <img src="/assets/images/main-logo.png" alt="le cnam" class="logo-image" />
+                    </div>
+                    <div class="footer-logo">
+                        <img src="/assets/images/logo.png" alt="espace numerique" class="secondary-footer-logo" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 footer-left-wrapper">
+                        <div class="footer-left">
+                            <ul class="footer-menu">
+                                <li class="cnam-copyright mobile-hidden tablet-hidden">&copy; Cnam <script type="text/javascript">var now=new Date();document.write(now.getFullYear());</script></li>
+                                <li class="credits"><a href="https://lecnam.net/credits" class="footer-expander">Crédits</a></li>
+                                <li class="legals"><a href="https://lecnam.net/mentions_legales" class="footer-expander">Mentions légales</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 footer-right-wrapper">
+                        <div class="footer-right">
+                            <ul class="footer-menu">
+                                <li class="cnam-fr"><a href="http://www.cnam.fr/" target="_blank" class="footer-expander">Cnam.fr</a></li>
+                                <li class="assist"><a href="https://lecnam.net/aide" class="footer-expander">Aide</a></li>
+                                <li class="accessibility"><a href="https://lecnam.net/declaration_accessibilite" class="footer-expander">Accessibilité : non conforme</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright-mobile tablet-only">
+                &copy; Cnam <script type="text/javascript">var now=new Date();document.write(now.getFullYear());</script>
+            </div>
+        </footer>
+    </body>
+    </html>
