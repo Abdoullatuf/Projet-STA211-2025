@@ -10,4 +10,4 @@ statsmodels>=0.13.0
 scipy>=1.7.0
 missingno>=0.5.2
 minisom>=2.3.5
-mlxtend>=0.23.4 
+mlxtend>=0.23.4
