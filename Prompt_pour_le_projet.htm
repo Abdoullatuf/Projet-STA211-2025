@@ -1,0 +1,217 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=Generator content="Microsoft Word 15 (filtered)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Aptos;}
+@font-face
+	{font-family:"Segoe UI Emoji";
+	panose-1:2 11 5 2 4 2 4 2 2 3;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:8.0pt;
+	margin-left:0cm;
+	line-height:115%;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;}
+a:link, span.MsoHyperlink
+	{color:#467886;
+	text-decoration:underline;}
+.MsoChpDefault
+	{font-size:12.0pt;
+	font-family:"Aptos",sans-serif;}
+.MsoPapDefault
+	{margin-bottom:8.0pt;
+	line-height:115%;}
+@page WordSection1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
+div.WordSection1
+	{page:WordSection1;}
+ /* List Definitions */
+ ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+-->
+</style>
+
+</head>
+
+<body lang=FR link="#467886" vlink="#96607D" style='word-wrap:break-word'>
+
+<div class=WordSection1>
+
+<p class=MsoNormal><b>Prompt — Projet complet STA211 :</b></p>
+
+<p class=MsoNormal>Tu es un assistant expert en data science spécialisé dans
+les méthodes statistiques enseignées dans le cours <b>STA211 du CNAM</b>.</p>
+
+<p class=MsoNormal>Tu dois m’aider à construire <b>un Jupyter Notebook en
+Python</b> pour prédire si une image est une publicité ou non, à partir du
+dataset <i>Internet Advertisements</i>.</p>
+
+<p class=MsoNormal>Voici les attentes pédagogiques à respecter dans le notebook
+:</p>
+
+<div class=MsoNormal align=center style='text-align:center'>
+
+<hr size=2 width="100%" align=center>
+
+</div>
+
+<p class=MsoNormal><b><span style='font-family:"Segoe UI Emoji",sans-serif'>&#128313;</span>
+Exploration et nettoyage :</b></p>
+
+<ul style='margin-top:0cm' type=disc>
+ <li class=MsoNormal>Charger les données data_train.csv</li>
+ <li class=MsoNormal>Gérer les <b>valeurs manquantes</b> : identifier le
+     mécanisme (MCAR/MAR/MNAR), appliquer des imputations en utilisant des
+     méthodes avancées (moyenne, médiane, kNN, multivariée, …)</li>
+ <li class=MsoNormal>Vérifier les <b>distributions</b> : histogrammes,
+     boxplots, qq-plots pour tester la normalité</li>
+ <li class=MsoNormal>Appliquer des <b>transformations</b> : log, Box-Cox, etc.
+     pour linéarité ou normalité</li>
+ <li class=MsoNormal>Discrétiser les variables si utile (quantiles, CAH, MDLPC)</li>
+</ul>
+
+<p class=MsoNormal><b><span style='font-family:"Segoe UI Emoji",sans-serif'>&#128313;</span>
+Analyse exploratoire :</b></p>
+
+<ul style='margin-top:0cm' type=disc>
+ <li class=MsoNormal>Réaliser des analyses <b>univariées</b>, <b>bivariées</b>
+     (avec la cible) et <b>multivariées</b></li>
+ <li class=MsoNormal>Utiliser <b>ACP/AFM</b> ou <b>classification de variables</b>
+     pour explorer la structure</li>
+ <li class=MsoNormal>Si applicable, tester les <b>cartes de Kohonen</b></li>
+</ul>
+
+<p class=MsoNormal><b><span style='font-family:"Segoe UI Emoji",sans-serif'>&#128313;</span>
+Modélisation supervisée :</b></p>
+
+<ul style='margin-top:0cm' type=disc>
+ <li class=MsoNormal>Mettre en œuvre les modèles du cours :</li>
+ <ul style='margin-top:0cm' type=circle>
+  <li class=MsoNormal><b>Régression logistique</b></li>
+  <li class=MsoNormal><b>CART (arbre de décision)</b></li>
+  <li class=MsoNormal><b>Forêt aléatoire</b></li>
+  <li class=MsoNormal><b>KNN ou SVM</b> (si souhaité)</li>
+ </ul>
+ <li class=MsoNormal>Appliquer la <b>validation croisée</b> ou split (80/20)
+     stratifié</li>
+ <li class=MsoNormal>Évaluer les modèles : <b>précision, rappel, F1-score, AUC,
+     confusion matrix</b></li>
+ <li class=MsoNormal>Gérer les classes déséquilibrées : <b>pondération</b>, <b>SMOTE</b></li>
+</ul>
+
+<p class=MsoNormal><b><span style='font-family:"Segoe UI Emoji",sans-serif'>&#128313;</span>
+Interprétation &amp; conclusion :</b></p>
+
+<ul style='margin-top:0cm' type=disc>
+ <li class=MsoNormal>Visualiser les <b>importances de variables</b></li>
+ <li class=MsoNormal>Expliquer le <b>compromis biais-variance</b></li>
+ <li class=MsoNormal>Comparer les modèles selon <b>performance et complexité</b></li>
+ <li class=MsoNormal>Présenter les résultats avec des <b>cellules Markdown
+     claires</b></li>
+</ul>
+
+<div class=MsoNormal align=center style='text-align:center'>
+
+<hr size=2 width="100%" align=center>
+
+</div>
+
+<p class=MsoNormal>Génère un <b>notebook Python structuré, commenté</b>, en
+utilisant : pandas, scikit-learn, seaborn, matplotlib, prince, imblearn, …</p>
+
+<p class=MsoNormal><br>
+Si besoin, propose une <b>analyse factorielle multiple</b>, ou des
+regroupements de modalités pour faciliter la lecture des données.</p>
+
+<p class=MsoNormal>Préparer le fichier de prédiction prêt à être soumis en
+respectant&nbsp;les consignes du challenge&nbsp;:</p>
+
+<p class=MsoNormal>Soumissions</p>
+
+<p class=MsoNormal>Les soumissions se font sous forme de fichier texte portant
+l’extension&nbsp;.csv, que vous pouvez exporter avec la commande suivante :</p>
+
+<p class=MsoNormal><b><span lang=EN-US>write</span></b><span lang=EN-US>(y_pred,
+file = &quot;my_pred.csv&quot;)</span></p>
+
+<p class=MsoNormal>Le fichier doit contenir&nbsp;820&nbsp;lignes contenant
+uniquement un des mots&nbsp;ad.&nbsp;ou&nbsp;noad..</p>
+
+<p class=MsoNormal>Tous les fichiers&nbsp;.csv&nbsp;placés dans votre
+répertoire Dropbox partagé seront automatiquement importés grâce à la
+fonction&nbsp;read_pred.</p>
+
+<p class=MsoNormal><span lang=EN-US>read_pred &lt;- <b>function</b>(file, n =
+820) {</span></p>
+
+<p class=MsoNormal><span lang=EN-US>  y_pred &lt;- <b>scan</b>(file, what =
+&quot;character&quot;)</span></p>
+
+<p class=MsoNormal><span lang=EN-US>  <b>if</b> (<b>length</b>(y_pred) <b>!=</b>
+n)</span></p>
+
+<p class=MsoNormal><span lang=EN-US>    </span><b>stop</b>(&quot;Le nombre de
+prédictions est incorrect&quot;)</p>
+
+<p class=MsoNormal>  <b><span lang=EN-US>if</span></b><span lang=EN-US> (<b>any</b>(<b>is.na</b>(y_pred)))</span></p>
+
+<p class=MsoNormal><span lang=EN-US>    </span><b>stop</b>(&quot;Le vecteur de
+prédiction contient des valeurs manquantes (NA°&quot;)</p>
+
+<p class=MsoNormal>  <b><span lang=EN-US>if</span></b><span lang=EN-US>(<b>any</b>(<b>!</b>(<b>unique</b>(y_pred)<b>%in%c</b>(&quot;ad.&quot;,&quot;noad.&quot;)))){</span></p>
+
+<p class=MsoNormal><span lang=EN-US>    </span><b>stop</b>(<b>paste0</b>(&quot;Le
+nom des modalités prédites doit être ad. ou noad. au lieu de &quot;,<b>paste</b>(<b>unique</b>(y_pred),collapse
+= &quot; &quot;)))}</p>
+
+<p class=MsoNormal>  <b><span lang=EN-US>if</span></b><span lang=EN-US>(<b>length</b>(<b>unique</b>(y_pred))<b>==</b>1){</span></p>
+
+<p class=MsoNormal><span lang=EN-US>    y_pred &lt;- <b>as.factor</b>(y_pred)</span></p>
+
+<p class=MsoNormal><span lang=EN-US>    }<b>else</b>{</span></p>
+
+<p class=MsoNormal><span lang=EN-US>  y_pred &lt;- <b>factor</b>(y_pred, levels
+= <b>c</b>(&quot;ad.&quot;, &quot;noad.&quot;))}</span></p>
+
+<p class=MsoNormal><span lang=EN-US>  </span><b>return</b>(y_pred)</p>
+
+<p class=MsoNormal>}</p>
+
+<p class=MsoNormal>Utilisez cette fonction pour vérifier que votre fichier sera
+correctement importé.</p>
+
+<p class=MsoNormal>Les erreurs de lecture lors de l’import sont affichées à la
+section&nbsp;<a
+href="https://d.docs.live.net/b270f3a488d9d3f3/Documents/Projects/STA211_Challenge_2025/description_du_challenge.html#erreurs-de-lecture">Erreurs
+de lecture</a>.</p>
+
+<p class=MsoNormal>Une fois un fichier importé, son score est calculé et
+stocké. Vous pouvez effacer ou remplacer des soumissions, l’historique est
+conservé.</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+</div>
+
+</body>
+
+</html>

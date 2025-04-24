@@ -10,13 +10,12 @@ import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import prince  # Pour l'analyse factorielle multiple
-from sklearn.cluster import KMeans  # Pour la classification non supervisée
+from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectFromModel
 import umap
 import warnings
-from sklearn.impute import SimpleImputer, KNNImputer
 from sklearn.metrics import silhouette_score, calinski_harabasz_score
 from sklearn.feature_selection import f_classif
 from sklearn.model_selection import GridSearchCV
@@ -25,6 +24,9 @@ from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import cross_val_score
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
+
+from data_preprocessing import load_data, analyze_missing_values, handle_missing_values
+
 warnings.filterwarnings('ignore')
 
 # Configuration des graphiques
@@ -33,54 +35,23 @@ sns.set_palette("husl")
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 1000)
 
-def clean_data(data):
-    """Nettoie les données en enlevant les guillemets et les espaces superflus."""
-    # Nettoyer les noms de colonnes
-    data.columns = data.columns.str.strip().str.replace('"', '')
-    
-    # Nettoyer les valeurs string
-    for col in data.select_dtypes(include=['object']).columns:
-        data[col] = data[col].str.strip().str.replace('"', '')
-    
-    return data
-
-def load_data(file_path):
-    """
-    Charge les données depuis un fichier CSV.
-    
-    Args:
-        file_path (str): Chemin vers le fichier CSV
-        
-    Returns:
-        pandas.DataFrame: DataFrame contenant les données
-    """
-    try:
-        # Essayer d'abord avec le séparateur tabulation
-        df = pd.read_csv(file_path, sep='\t')
-        
-        # Si la lecture échoue, essayer avec la virgule
-        if df.shape[1] == 1:
-            df = pd.read_csv(file_path, sep=',')
-            
-        # Vérifier la présence de la colonne 'outcome'
-        if 'outcome' not in df.columns:
-            raise ValueError("La colonne 'outcome' est manquante dans le fichier de données")
-            
-        # Nettoyer les données
-        df = clean_data(df)
-        
-        # Afficher les informations sur le dataset
-        print(f"Dimensions du dataset: {df.shape}")
-        print(f"Colonnes: {df.columns.tolist()}")
-        print(f"Types de données: {df.dtypes}")
-        print("\nAperçu des données:")
-        print(df.head())
-        
-        return df
-        
-    except Exception as e:
-        print(f"Erreur lors du chargement des données: {str(e)}")
-        return None
+__all__ = [
+    'univariate_analysis',
+    'bivariate_analysis',
+    'multivariate_analysis',
+    'dimension_reduction',
+    'umap_visualization',
+    'summary_statistics',
+    'advanced_dimension_reduction',
+    'perform_exploratory_analysis',
+    'compare_visualization_methods',
+    'analyze_feature_importance',
+    'create_polynomial_features',
+    'create_interaction_features',
+    'enhance_features',
+    'optimize_hyperparameters',
+    'evaluate_optimized_models'
+]
 
 def univariate_analysis(data):
     """Effectue l'analyse univariée des données."""
@@ -103,8 +74,17 @@ def univariate_analysis(data):
         print("\nValeurs manquantes par colonne :")
         print(missing_values[missing_values > 0])
 
-def bivariate_analysis(data):
-    """Effectue l'analyse bivariée des données."""
+def bivariate_analysis(data, display_correlations=True):
+    """
+    Effectue l'analyse bivariée des données.
+    
+    Args:
+        data (pd.DataFrame): DataFrame contenant les données
+        display_correlations (bool): Si True, affiche les corrélations, sinon les retourne
+        
+    Returns:
+        tuple: (DataFrame des corrélations avec la cible, liste des paires de variables fortement corrélées)
+    """
     print("\n=== Analyse Bivariée ===")
     
     # Encoder la variable cible (0 pour 'noad.' et 1 pour 'ad.')
@@ -120,8 +100,9 @@ def bivariate_analysis(data):
     correlations['correlation'] = [numeric_data[col].corr(target_numeric) for col in numeric_cols]
     correlations = correlations.sort_values('correlation', key=abs, ascending=False)
     
-    print("\nTop 10 variables les plus corrélées avec la variable cible :")
-    print(correlations.head(10))
+    if display_correlations:
+        print("\nTop 10 variables les plus corrélées avec la variable cible :")
+        print(correlations.head(10))
     
     # Identifier les paires de variables hautement corrélées
     corr_matrix = numeric_data.corr()
@@ -134,13 +115,23 @@ def bivariate_analysis(data):
                                       corr_matrix.columns[j], 
                                       corr_matrix.iloc[i,j]))
     
-    if high_corr_pairs:
+    if display_correlations and high_corr_pairs:
         print("\nPaires de variables fortement corrélées (|corr| > 0.8):")
         for var1, var2, corr in high_corr_pairs:
             print(f"{var1} - {var2}: {corr:.3f}")
+    
+    return correlations, high_corr_pairs
 
 def multivariate_analysis(data):
-    """Effectue l'analyse multivariée des données."""
+    """
+    Effectue l'analyse multivariée des données.
+    
+    Args:
+        data (pd.DataFrame): DataFrame contenant les données
+        
+    Returns:
+        list: Liste des paires de variables fortement corrélées (var1, var2, corr)
+    """
     print("\n=== Analyse Multivariée ===")
     try:
         # Encoder la variable cible
@@ -169,15 +160,13 @@ def multivariate_analysis(data):
         # Trier par valeur absolue de corrélation
         high_corr_pairs.sort(key=lambda x: abs(x[2]), reverse=True)
         
-        # Afficher les résultats
-        print("\nPaires de variables fortement corrélées (|corr| > 0.8):")
-        for var1, var2, corr in high_corr_pairs:
-            print(f"{var1} - {var2}: {corr:.3f}")
+        return high_corr_pairs
             
     except Exception as e:
         print(f"Erreur lors de l'analyse multivariée : {str(e)}")
+        return []
 
-def dimension_reduction(data, correlation_threshold=0.8, variance_threshold=0.95):
+def dimension_reduction(data, correlation_threshold=0.8, variance_threshold=0.95, display_info=False):
     """
     Réduit la dimensionnalité des données en utilisant la corrélation et l'ACP.
     
@@ -185,11 +174,13 @@ def dimension_reduction(data, correlation_threshold=0.8, variance_threshold=0.95
         data (pd.DataFrame): DataFrame contenant les données
         correlation_threshold (float): Seuil de corrélation pour éliminer les variables redondantes
         variance_threshold (float): Seuil de variance expliquée pour l'ACP
+        display_info (bool): Si True, affiche les informations détaillées
         
     Returns:
         tuple: (DataFrame réduit, modèle ACP, liste des variables conservées)
     """
-    print("\n=== Réduction de Dimensionnalité ===")
+    if display_info:
+        print("\n=== Réduction de Dimensionnalité ===")
     
     # 1. Préparation des données
     # Séparer la variable cible
@@ -202,10 +193,11 @@ def dimension_reduction(data, correlation_threshold=0.8, variance_threshold=0.95
     X = data[numeric_cols].copy()
     
     # Gérer les valeurs manquantes
-    print("\nGestion des valeurs manquantes:")
-    missing_counts = X.isnull().sum()
-    print(f"Nombre de colonnes avec valeurs manquantes: {(missing_counts > 0).sum()}")
-    print(f"Pourcentage moyen de valeurs manquantes: {missing_counts.mean()*100:.2f}%")
+    if display_info:
+        print("\nGestion des valeurs manquantes:")
+        missing_counts = X.isnull().sum()
+        print(f"Nombre de colonnes avec valeurs manquantes: {(missing_counts > 0).sum()}")
+        print(f"Pourcentage moyen de valeurs manquantes: {missing_counts.mean()*100:.2f}%")
     
     # Imputer les valeurs manquantes par la moyenne
     X = X.fillna(X.mean())
@@ -225,8 +217,9 @@ def dimension_reduction(data, correlation_threshold=0.8, variance_threshold=0.95
     # Trier les variables par corrélation avec la cible
     to_drop = [col for col in correlations_with_target.sort_values(ascending=True).index]
     
-    print(f"\nNombre de variables éliminées par corrélation : {len(to_drop)}")
-    print(f"Variables restantes : {len(X.columns) - len(to_drop)}")
+    if display_info:
+        print(f"\nNombre de variables éliminées par corrélation : {len(to_drop)}")
+        print(f"Variables restantes : {len(X.columns) - len(to_drop)}")
     
     # Créer le DataFrame réduit
     X_reduced = X.drop(columns=to_drop)
@@ -244,8 +237,9 @@ def dimension_reduction(data, correlation_threshold=0.8, variance_threshold=0.95
     cumulative_variance_ratio = np.cumsum(pca.explained_variance_ratio_)
     n_components = np.argmax(cumulative_variance_ratio >= variance_threshold) + 1
     
-    print(f"\nNombre de composantes principales retenues : {n_components}")
-    print(f"Variance expliquée : {cumulative_variance_ratio[n_components-1]*100:.2f}%")
+    if display_info:
+        print(f"\nNombre de composantes principales retenues : {n_components}")
+        print(f"Variance expliquée : {cumulative_variance_ratio[n_components-1]*100:.2f}%")
     
     # Créer le DataFrame final avec les composantes principales
     pca_reduced = PCA(n_components=n_components)
@@ -259,9 +253,10 @@ def dimension_reduction(data, correlation_threshold=0.8, variance_threshold=0.95
     X_final['outcome'] = target
     
     # 4. Afficher les composantes principales et leur importance
-    print("\nImportance des composantes principales :")
-    for i in range(n_components):
-        print(f"PC{i+1}: {pca_reduced.explained_variance_ratio_[i]*100:.2f}%")
+    if display_info:
+        print("\nImportance des composantes principales :")
+        for i in range(n_components):
+            print(f"PC{i+1}: {pca_reduced.explained_variance_ratio_[i]*100:.2f}%")
     
     # 5. Visualisation des deux premières composantes principales
     plt.figure(figsize=(10, 6))
@@ -539,7 +534,7 @@ def perform_exploratory_analysis(data, target_col='outcome'):
     
     # Analyses existantes
     univariate_analysis(data)
-    bivariate_analysis(data)
+    correlations, high_corr_pairs = bivariate_analysis(data)
     multivariate_analysis(data)
     
     # Réduction de dimension et visualisations
@@ -629,7 +624,18 @@ def compare_visualization_methods(df, target_col='outcome'):
     except Exception as e:
         print(f"Erreur lors de la comparaison des méthodes de visualisation : {str(e)}")
 
-def analyze_feature_importance(df, target_col='outcome'):
+def analyze_feature_importance(df, target_col='outcome', include_enhanced=False):
+    """
+    Analyse l'importance des features, incluant optionnellement les features augmentées.
+    
+    Args:
+        df (pd.DataFrame): DataFrame contenant les données
+        target_col (str): Nom de la colonne cible
+        include_enhanced (bool): Si True, inclut les features polynomiales et d'interaction
+        
+    Returns:
+        pd.DataFrame: DataFrame avec les importances des features
+    """
     try:
         # Create a copy of the DataFrame
         data = df.copy()
@@ -671,29 +677,122 @@ def analyze_feature_importance(df, target_col='outcome'):
         
         # Combine scores
         importance_results = pd.DataFrame({
+            'feature': numeric_cols,
             'RF_Importance': rf_importance / rf_importance.max(),
             'F_Score': f_importance / f_importance.max(),
             'Correlation': correlations / correlations.max()
         })
         
-        importance_results['Combined_Score'] = importance_results.mean(axis=1)
+        importance_results['Combined_Score'] = importance_results[['RF_Importance', 'F_Score', 'Correlation']].mean(axis=1)
+        importance_results = importance_results.sort_values('Combined_Score', ascending=False)
         
         # Get top features
-        top_features = importance_results.nlargest(20, 'Combined_Score')
+        top_features = importance_results.head(20)
         
         # Plotting
         plt.figure(figsize=(12, 6))
         plt.bar(range(len(top_features)), top_features['Combined_Score'])
-        plt.xticks(range(len(top_features)), top_features.index, rotation=45, ha='right')
+        plt.xticks(range(len(top_features)), top_features['feature'], rotation=45, ha='right')
         plt.title('Top 20 Most Important Features')
         plt.tight_layout()
         plt.show()
+        
+        if include_enhanced:
+            enhanced_df = enhance_features(df, top_features['feature'].tolist())
+            # Mettre à jour l'analyse avec les nouvelles features
+            correlations = enhanced_df.corr()[target_col].sort_values(ascending=False)
+            enhanced_importance = pd.DataFrame({
+                'feature': correlations.index,
+                'correlation': correlations.values
+            })
+            # Combiner les résultats originaux avec les résultats des features augmentées
+            importance_results = pd.concat([importance_results, enhanced_importance], axis=0)
         
         return importance_results
         
     except Exception as e:
         print(f"Erreur lors de l'analyse de l'importance des variables : {str(e)}")
-        return None
+        # Return empty DataFrame with expected columns in case of error
+        return pd.DataFrame(columns=['feature', 'RF_Importance', 'F_Score', 'Correlation', 'Combined_Score'])
+
+def create_polynomial_features(data, variables=None, degree=2):
+    """
+    Crée des features polynomiales.
+    
+    Args:
+        data (pd.DataFrame): DataFrame contenant les données
+        variables (List[str]): Liste des variables à transformer
+        degree (int): Degré maximum du polynôme
+        
+    Returns:
+        pd.DataFrame: DataFrame avec les nouvelles features
+    """
+    if variables is None:
+        # Si pas de variables spécifiées, utiliser les colonnes numériques
+        numeric_cols = data.select_dtypes(include=['float64', 'int64']).columns
+        numeric_cols = numeric_cols[numeric_cols != 'outcome']
+        # Prendre les 4 premières colonnes numériques
+        variables = numeric_cols[:4].tolist()
+    
+    new_features = {}
+    for var in variables:
+        if var in data.columns:  # Vérifier que la variable existe dans le DataFrame
+            for d in range(2, degree + 1):
+                new_features[f"{var}_pow{d}"] = data[var] ** d
+    
+    return pd.DataFrame(new_features)
+
+def create_interaction_features(data, variables=None):
+    """
+    Crée des features d'interaction.
+    
+    Args:
+        data (pd.DataFrame): DataFrame contenant les données
+        variables (List[str]): Liste des variables pour créer les interactions
+        
+    Returns:
+        pd.DataFrame: DataFrame avec les nouvelles features
+    """
+    if variables is None:
+        # Si pas de variables spécifiées, utiliser les colonnes numériques
+        numeric_cols = data.select_dtypes(include=['float64', 'int64']).columns
+        numeric_cols = numeric_cols[numeric_cols != 'outcome']
+        # Prendre les 4 premières colonnes numériques
+        variables = numeric_cols[:4].tolist()
+    
+    new_features = {}
+    for i, var1 in enumerate(variables):
+        if var1 not in data.columns:  # Skip if variable doesn't exist
+            continue
+        for var2 in variables[i+1:]:
+            if var2 not in data.columns:  # Skip if variable doesn't exist
+                continue
+            new_features[f"{var1}_{var2}_interact"] = data[var1] * data[var2]
+    
+    return pd.DataFrame(new_features)
+
+def enhance_features(data, variables=None):
+    """
+    Crée toutes les nouvelles features et les combine.
+    
+    Args:
+        data (pd.DataFrame): DataFrame contenant les données
+        variables (List[str]): Liste des variables à utiliser
+        
+    Returns:
+        pd.DataFrame: DataFrame avec toutes les features
+    """
+    try:
+        poly_features = create_polynomial_features(data, variables)
+        interact_features = create_interaction_features(data, variables)
+        
+        # Combine all features
+        enhanced_df = pd.concat([data, poly_features, interact_features], axis=1)
+        return enhanced_df
+        
+    except Exception as e:
+        print(f"Erreur lors de la création des features augmentées : {str(e)}")
+        return data  # Return original data if enhancement fails
 
 def optimize_hyperparameters(X, y):
     """
@@ -858,62 +957,6 @@ def evaluate_optimized_models(models_dict, X, y):
     plt.show()
     
     return results
-
-def analyze_missing_values(df):
-    """
-    Analyze missing values in the dataset and provide detailed insights.
-    
-    Parameters:
-    -----------
-    df : pandas.DataFrame
-        The input dataset to analyze
-        
-    Returns:
-    --------
-    dict
-        A dictionary containing various statistics about missing values
-    """
-    # Calculate basic missing value statistics
-    total_cells = df.size
-    total_missing = df.isnull().sum().sum()
-    missing_percentage = (total_missing / total_cells) * 100
-    
-    # Get columns with missing values and their percentages
-    missing_by_column = df.isnull().sum()
-    missing_by_column = missing_by_column[missing_by_column > 0]
-    missing_percentages = (missing_by_column / len(df)) * 100
-    
-    # Group columns by percentage of missing values
-    high_missing = missing_percentages[missing_percentages > 30]
-    medium_missing = missing_percentages[(missing_percentages > 5) & (missing_percentages <= 30)]
-    low_missing = missing_percentages[missing_percentages <= 5]
-    
-    # Create summary statistics
-    summary = {
-        'total_missing': total_missing,
-        'missing_percentage': missing_percentage,
-        'columns_with_missing': len(missing_by_column),
-        'high_missing_cols': len(high_missing),
-        'medium_missing_cols': len(medium_missing),
-        'low_missing_cols': len(low_missing),
-        'missing_by_column': missing_by_column.to_dict(),
-        'missing_percentages': missing_percentages.to_dict()
-    }
-    
-    # Print detailed analysis
-    print("\nMissing Values Analysis:")
-    print("-----------------------")
-    print(f"Total missing values: {total_missing:,} ({missing_percentage:.2f}% of all data)")
-    print(f"Number of columns with missing values: {len(missing_by_column)}")
-    print("\nBreakdown by severity:")
-    print(f"High (>30%): {len(high_missing)} columns")
-    print(f"Medium (5-30%): {len(medium_missing)} columns")
-    print(f"Low (≤5%): {len(low_missing)} columns")
-    
-    print("\nColumns with highest missing percentages:")
-    print(missing_percentages.sort_values(ascending=False).head().to_string())
-    
-    return summary
 
 def main():
     try:
