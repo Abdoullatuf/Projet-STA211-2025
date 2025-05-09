@@ -2,30 +2,21 @@
 Module d'analyse exploratoire pour le projet STA211.
 Ce module contient des fonctions pour analyser les données du dataset Internet Advertisements.
 """
-
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import warnings
+
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-import prince  # Pour l'analyse factorielle multiple
+import umap
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_selection import SelectFromModel
-import umap
-import warnings
-from sklearn.metrics import silhouette_score, calinski_harabasz_score
-from sklearn.feature_selection import f_classif
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import make_scorer, f1_score, accuracy_score, precision_score, recall_score
-from imblearn.over_sampling import SMOTE
-from sklearn.model_selection import cross_val_score
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
+from scipy.stats import chi2_contingency
+import prince  # Si tu fais AFM / MCA
 
-from data_preprocessing import load_data, analyze_missing_values, handle_missing_values
 
 warnings.filterwarnings('ignore')
 
@@ -50,9 +41,34 @@ __all__ = [
     'create_interaction_features',
     'enhance_features',
     'optimize_hyperparameters',
-    'evaluate_optimized_models'
+    'evaluate_optimized_models',
+    'analyze_categorical_binaries_vs_target',
+    'save_fig'
 ]
 
+
+
+def save_fig(fname: str, directory: str = None, dpi: int = 150, figsize=(5, 3.5), **kwargs):
+    """
+    Sauvegarde la figure matplotlib courante dans directory/fname avec taille personnalisable.
+    
+    - figsize : tuple (largeur, hauteur) en pouces
+    - dpi : résolution
+    """
+    if directory is None:
+        directory = os.getenv('FIGURES_DIR', os.getcwd())
+
+    os.makedirs(directory, exist_ok=True)
+    path = os.path.join(directory, fname)
+
+    # Appliquer la taille de figure
+    fig = plt.gcf()
+    fig.set_size_inches(figsize)
+
+    plt.savefig(path, dpi=dpi, bbox_inches="tight", **kwargs)
+    plt.show()
+
+    
 def univariate_analysis(data):
     """Effectue l'analyse univariée des données."""
     print("\n=== Analyse Univariée ===")
@@ -121,6 +137,44 @@ def bivariate_analysis(data, display_correlations=True):
             print(f"{var1} - {var2}: {corr:.3f}")
     
     return correlations, high_corr_pairs
+
+
+def analyze_categorical_binaries_vs_target(data, target_col='outcome', show_top=20, pval_threshold=0.05):
+    """
+    Analyse les relations entre les variables binaires (0/1) et une variable cible catégorielle.
+
+    Affiche les p-values du test du chi^2 pour chaque variable binaire vs. la cible,
+    et sélectionne celles en-dessous du seuil pval_threshold.
+
+    Args:
+        data (pd.DataFrame): le DataFrame à analyser.
+        target_col (str): nom de la variable cible.
+        show_top (int): nombre de variables les plus significatives à afficher.
+        pval_threshold (float): seuil de significativité des p-values.
+
+    Returns:
+        pd.DataFrame: tableau des variables sélectionnées triées par p-value croissante.
+    """
+    print("\n=== Analyse Bivariée : Variables Binaires vs Cible Catégorielle ===")
+
+    binary_cols = [col for col in data.columns 
+                   if col != target_col and data[col].dropna().nunique() == 2]
+
+    results = []
+
+    for col in binary_cols:
+        contingency = pd.crosstab(data[col], data[target_col])
+        if contingency.shape[0] == 2 and contingency.shape[1] > 1:
+            chi2, p, dof, expected = chi2_contingency(contingency)
+            if p < pval_threshold:
+                results.append({'variable': col, 'p_value': p, 'chi2': chi2})
+
+    results_df = pd.DataFrame(results).sort_values("p_value")
+
+    print(f"\nTop {show_top} variables binaires avec p-value < {pval_threshold} :")
+    print(results_df.head(show_top))
+
+    return results_df
 
 def multivariate_analysis(data):
     """
@@ -957,6 +1011,7 @@ def evaluate_optimized_models(models_dict, X, y):
     plt.show()
     
     return results
+    
 
 def main():
     try:
